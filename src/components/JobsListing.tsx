@@ -11,8 +11,11 @@ const JobsListing = ({isHome = false}) => {
 
   useEffect(() => {
     const fetchJobs = async () => {
+      const apiUrl = isHome
+      ? '/api/jobs?_limit=3'
+      : '/api/jobs';
       try {
-        const res = await fetch('http://localhost:5000/jobs');
+        const res = await fetch(apiUrl);
         const data = await res.json();
         setJobs(data);
 
@@ -27,7 +30,7 @@ const JobsListing = ({isHome = false}) => {
     fetchJobs();
 
    }, []);
-   console.log(loading)
+   
 
   return (
     <section className="bg-blue-50 px-4 py-10">
