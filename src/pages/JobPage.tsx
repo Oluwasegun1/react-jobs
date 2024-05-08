@@ -10,7 +10,7 @@ interface Job {
   type: string;
   location: string;
   description: string;
-  Salary: number;
+  salary: number;
   company: {
     name: string;
     description: string;
@@ -22,6 +22,7 @@ interface Job {
 const JobPage = ({ deleteJob }) => {
   const navigate = useNavigate();
   const { id } = useParams();
+  console.log(`Job ID: ${id}`);
   const job: Job = useLoaderData() as Job;
 
   const onDeleteClick = (jobId: string) => {
@@ -64,7 +65,7 @@ const JobPage = ({ deleteJob }) => {
                   <h3 className="text-indigo-800 text-lg font-bold mb-6">Job Description</h3>
                   <p className="mb-4">{job.description}</p>
                   <h3 className="text-indigo-800 text-lg font-bold mb-2">Salary</h3>
-                  <p className="mb-4">{job.Salary} / Year</p>
+                  <p className="mb-4">{job.salary} / Year</p>
                 </div>
               </main>
 

@@ -3,11 +3,25 @@ import {useState, useEffect} from 'react';
 import Spinner from './Spinner';
 import JobListing from './JobListing';
 
+interface Job {
+  id: string;
+  title: string;
+  type: string;
+  location: string;
+  description: string;
+  salary: number;
+  company: {
+    name: string;
+    description: string;
+    contactEmail: string;
+    contactPhone: string;
+  };
+}
 
 
-const JobsListing = ({isHome = false}) => {
- const [jobs, setJobs] = useState([]);
- const [loading, setLoading] = useState<boolean>(true);
+const JobsListing = ({ isHome = false }: { isHome?: boolean }) => {
+  const [jobs, setJobs] = useState<Job[]>([]); // Use Job[] to indicate array of Job objects
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -29,7 +43,7 @@ const JobsListing = ({isHome = false}) => {
 
     fetchJobs();
 
-   }, []);
+   }, [isHome]);
    
 
   return (

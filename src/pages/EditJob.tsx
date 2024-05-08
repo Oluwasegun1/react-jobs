@@ -132,7 +132,7 @@ const EditJob = ({updateJobSubmit}) => {
                 className="border rounded w-full py-2 px-3"
                 required
                 value={salary}
-                onChange={(e) => setSalary(e.target.value)}
+                onChange={(e) => setSalary(parseInt(e.target.value))}
               >
                 <option value="Under $50K">Under $50K</option>
                 <option value="$50K - 60K">$50K - $60K</option>

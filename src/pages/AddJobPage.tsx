@@ -94,7 +94,7 @@ const AddJobPage = ({ addJobSubmit }) => {
                 id="description"
                 name="description"
                 className="border rounded w-full py-2 px-3"
-                rows="4"
+                rows={4}
                 placeholder="Add any job duties, expectations, requirements, etc"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -170,7 +170,7 @@ const AddJobPage = ({ addJobSubmit }) => {
                 id="company_description"
                 name="company_description"
                 className="border rounded w-full py-2 px-3"
-                rows="4"
+                rows={4}
                 placeholder="What does your company do?"
                 value={companyDescription}
                 onChange={(e) => setCompanyDescription(e.target.value)}
