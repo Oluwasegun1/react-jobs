@@ -1,61 +1,64 @@
-
-import React from 'react';
+import React from "react";
 import {
   Route,
   createBrowserRouter,
   createRoutesFromElements,
   RouterProvider,
-} from 'react-router-dom';
-import Homepage from './pages/Homepage';
-import MainLayout from './pages/MainLayout';
-import JobsPage from './pages/JobsPage';
-import NotFoundPage from './pages/NotFoundPage';
-import JobPage, { jobLoader } from './pages/JobPage'; 
-import AddJobPage from './pages/AddJobPage';
-import EditJob from './pages/EditJob';
+} from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Homepage from "./pages/Homepage";
+import MainLayout from "./pages/MainLayout";
+import JobsPage from "./pages/JobsPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import JobPage, { jobLoader } from "./pages/JobPage";
+import AddJobPage from "./pages/AddJobPage";
+import EditJob from "./pages/EditJob";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { Job } from "./types";
 
 const App: React.FC = () => {
   // Add New Job
-  const addJob = async (newJob) => {
+  const addJob = async (newJob: Omit<Job, "id">) => {
     try {
-       await fetch('/api/jobs', {
-        method: 'POST',
+      await fetch("/api/jobs", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newJob),
       });
       // Handle response as needed
     } catch (error) {
-      console.error('Error adding job:', error);
+      console.error("Error adding job:", error);
     }
   };
 
   // Delete Job
   const deleteJob = async (id: string) => {
     try {
-       await fetch(`/api/jobs/${id}`, {
-        method: 'DELETE',
+      await fetch(`/api/jobs/${id}`, {
+        method: "DELETE",
       });
       // Handle response as needed
     } catch (error) {
-      console.error('Error deleting job:', error);
+      console.error("Error deleting job:", error);
     }
   };
 
   // Update Job
-  const updateJob = async (job) => {
+  const updateJob = async (job: Job) => {
     try {
-       await fetch(`/api/jobs/${job.id}`, {
-        method: 'PUT',
+      await fetch(`/api/jobs/${job.id}`, {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(job),
       });
       // Handle response as needed
     } catch (error) {
-      console.error('Error updating job:', error);
+      console.error("Error updating job:", error);
     }
   };
 
@@ -66,14 +69,38 @@ const App: React.FC = () => {
         <Route index element={<Homepage />} />
         <Route path="/jobs" element={<JobsPage />} />
         <Route path="/add-job" element={<AddJobPage addJobSubmit={addJob} />} />
-        <Route path="/edit-job/:id" element={<EditJob updateJobSubmit={updateJob} />} loader={jobLoader} />
-        <Route path="/jobs/:id" element={<JobPage deleteJob={deleteJob} />} loader={jobLoader} />
+        <Route
+          path="/edit-job/:id"
+          element={<EditJob updateJobSubmit={updateJob} />}
+          loader={jobLoader}
+        />
+        <Route
+          path="/jobs/:id"
+          element={<JobPage deleteJob={deleteJob} />}
+          loader={jobLoader}
+        />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     )
   );
 
-  return <RouterProvider router={router} />;
+  return (
+    <ErrorBoundary>
+      <RouterProvider router={router} />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </ErrorBoundary>
+  );
 };
 
 export default App;
