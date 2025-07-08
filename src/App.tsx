@@ -18,22 +18,6 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { Job } from "./types";
 
 const App: React.FC = () => {
-  // Add New Job
-  const addJob = async (newJob: Omit<Job, "id">) => {
-    try {
-      await fetch("/api/jobs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newJob),
-      });
-      // Handle response as needed
-    } catch (error) {
-      console.error("Error adding job:", error);
-    }
-  };
-
   // Delete Job
   const deleteJob = async (id: string) => {
     try {
@@ -49,7 +33,7 @@ const App: React.FC = () => {
   // Update Job
   const updateJob = async (job: Job) => {
     try {
-      await fetch(`/api/jobs/${job.id}`, {
+      await fetch(`/api/jobs/${job._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +52,7 @@ const App: React.FC = () => {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Homepage />} />
         <Route path="/jobs" element={<JobsPage />} />
-        <Route path="/add-job" element={<AddJobPage addJobSubmit={addJob} />} />
+        <Route path="/add-job" element={<AddJobPage />} />
         <Route
           path="/edit-job/:id"
           element={<EditJob updateJobSubmit={updateJob} />}

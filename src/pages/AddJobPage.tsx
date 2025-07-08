@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { client } from "../lib/sanityClient";
 
-const AddJobPage = ({ addJobSubmit }) => {
+const AddJobPage = () => {
   const [title, setTitle] = useState("");
   const [type, setType] = useState("Full-Time");
   const [location, setLoation] = useState("");
@@ -15,27 +16,40 @@ const AddJobPage = ({ addJobSubmit }) => {
 
   const navigate = useNavigate();
 
-  const submitForm = (e) => {
+  const submitForm = async (e) => {
     e.preventDefault();
-
-    const newJob = {
-      title,
-      type,
-      location,
-      description,
-      salary,
-      company: {
+    try {
+      // 1. Create the company
+      const companyDoc = {
+        _type: "company",
         name: companyName,
         description: companyDescription,
         contactEmail,
         contactPhone,
-      },
-    };
+      };
+      const createdCompany = await client.create(companyDoc);
 
-    addJobSubmit(newJob);
+      // 2. Create the job, referencing the company
+      const jobDoc = {
+        _type: "job",
+        title,
+        type,
+        location,
+        description,
+        salary,
+        company: {
+          _type: "reference",
+          _ref: createdCompany._id,
+        },
+      };
+      await client.create(jobDoc);
 
-    toast.success("Job Added Successfully");
-    return navigate("/jobs");
+      toast.success("Job Added Successfully");
+      navigate("/jobs");
+    } catch (error) {
+      toast.error("Failed to add job");
+      console.error(error);
+    }
   };
 
   return (
