@@ -27,9 +27,12 @@ const AddJobPage = () => {
         contactEmail,
         contactPhone,
       };
+
+      console.log(companyDoc);
       const createdCompany = await client.create(companyDoc);
 
       // 2. Create the job, referencing the company
+
       const jobDoc = {
         _type: "job",
         title,

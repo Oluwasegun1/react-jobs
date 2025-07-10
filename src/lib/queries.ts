@@ -16,3 +16,7 @@ export async function getJobs() {
     }
   }`);
 }
+
+export async function deleteJob(jobId: string) {
+  return await client.delete(jobId);
+}

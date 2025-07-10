@@ -128,7 +128,24 @@ const JobsListing: React.FC<JobsListingProps> = ({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {jobs.map((job) => (
-              <JobListing key={job._id} job={job} />
+              <JobListing
+                key={job._id}
+                job={job}
+                onDelete={async (jobId) => {
+                  // Optimistically update UI
+                  setJobs((prevJobs) =>
+                    prevJobs.filter((j) => j._id !== jobId)
+                  );
+                  try {
+                    const { deleteJob } = await import("../lib/queries");
+                    await deleteJob(jobId);
+                  } catch (err) {
+                    // Optionally, show error and revert UI
+                    setJobs((prevJobs) => [...prevJobs, job]);
+                    alert("Failed to delete job.");
+                  }
+                }}
+              />
             ))}
           </div>
         )}

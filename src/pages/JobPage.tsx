@@ -1,11 +1,13 @@
-
 import { FaArrowLeft, FaMapMarker } from "react-icons/fa";
 import { useParams, useLoaderData, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { deleteJob } from "../lib/queries";
+import { HiEllipsisVertical } from "react-icons/hi2";
+import { useState } from "react";
 
 interface Job {
-  id: string;
+  _id: string;
   title: string;
   type: string;
   location: string;
@@ -19,29 +21,35 @@ interface Job {
   };
 }
 
-const JobPage = ({ deleteJob }) => {
+const JobPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   console.log(`Job ID: ${id}`);
   const job: Job = useLoaderData() as Job;
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const onDeleteClick = (jobId: string) => {
-    const confirm = window.confirm('Are you sure you want to delete this listing?');
-
-    if (!confirm) return;
-
-    deleteJob(jobId);
-
-    toast.success('Job deleted successfully');
-
-    navigate('/jobs');
+  const onDeleteClick = async (jobId: string) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this listing?"
+    );
+    if (!confirmDelete) return;
+    try {
+      await deleteJob(jobId);
+      toast.success("Job deleted successfully");
+      navigate("/jobs");
+    } catch (err) {
+      toast.error("Failed to delete job.");
+    }
   };
 
   return (
     <>
       <section>
         <div className="container m-auto py-6 px-6">
-          <Link to="/jobs" className="text-indigo-500 hover:text-indigo-600 flex items-center">
+          <Link
+            to="/jobs"
+            className="text-indigo-500 hover:text-indigo-600 flex items-center"
+          >
             <FaArrowLeft className="mr-2" /> Back to Job Listings
           </Link>
         </div>
@@ -62,9 +70,13 @@ const JobPage = ({ deleteJob }) => {
                 </div>
 
                 <div className="bg-white p-6 rounded-lg shadow-md mt-6">
-                  <h3 className="text-indigo-800 text-lg font-bold mb-6">Job Description</h3>
+                  <h3 className="text-indigo-800 text-lg font-bold mb-6">
+                    Job Description
+                  </h3>
                   <p className="mb-4">{job.description}</p>
-                  <h3 className="text-indigo-800 text-lg font-bold mb-2">Salary</h3>
+                  <h3 className="text-indigo-800 text-lg font-bold mb-2">
+                    Salary
+                  </h3>
                   <p className="mb-4">{job.salary} / Year</p>
                 </div>
               </main>
@@ -78,26 +90,49 @@ const JobPage = ({ deleteJob }) => {
                   <p className="my-2">{job.company.description}</p>
                   <hr className="my-4" />
                   <h3 className="text-xl">Contact Email:</h3>
-                  <p className="my-2 bg-indigo-100 p-2 font-bold">{job.company.contactEmail}</p>
+                  <p className="my-2 bg-indigo-100 p-2 font-bold">
+                    {job.company.contactEmail}
+                  </p>
                   <h3 className="text-xl">Contact Phone:</h3>
-                  <p className="my-2 bg-indigo-100 p-2 font-bold">{job.company.contactPhone}</p>
+                  <p className="my-2 bg-indigo-100 p-2 font-bold">
+                    {job.company.contactPhone}
+                  </p>
                 </div>
 
                 {/* Manage */}
-                <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                <div className="bg-white p-6 rounded-lg shadow-md mt-6 relative">
                   <h3 className="text-xl font-bold mb-6">Manage Job</h3>
-                  <Link
-                    to={`/edit-job/${job.id}`}
-                    className="bg-indigo-500 hover:bg-indigo-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
-                  >
-                    Edit Job
-                  </Link>
-                  <button
-                    onClick={() => onDeleteClick(job.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
-                  >
-                    Delete Job
-                  </button>
+                  {/* Three-dot menu icon at top right */}
+                  <div className="absolute top-4 right-4 z-10">
+                    <button
+                      onClick={() =>
+                        setMenuOpen && setMenuOpen((open) => !open)
+                      }
+                      className="p-1 hover:bg-gray-100 rounded-full"
+                    >
+                      <HiEllipsisVertical className="w-6 h-6 text-gray-500" />
+                    </button>
+                    {menuOpen && (
+                      <div className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-lg z-20">
+                        <Link
+                          to={`/edit-job/${job._id}`}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => {
+                            setMenuOpen(false);
+                            onDeleteClick(job._id);
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </aside>
             </div>
@@ -110,12 +145,4 @@ const JobPage = ({ deleteJob }) => {
   );
 };
 
-const jobLoader = async ({ params }) => {
-  const { id } = params; 
-  const res = await fetch(`/api/jobs/${id}`); 
-  const data = await res.json();
-  return data;
-};
-
-
-export { JobPage as default, jobLoader };
+export default JobPage;

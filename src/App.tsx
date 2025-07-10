@@ -11,24 +11,15 @@ import Homepage from "./pages/Homepage";
 import MainLayout from "./pages/MainLayout";
 import JobsPage from "./pages/JobsPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import JobPage, { jobLoader } from "./pages/JobPage";
+import JobPage from "./pages/JobPage";
 import AddJobPage from "./pages/AddJobPage";
 import EditJob from "./pages/EditJob";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { Job } from "./types";
+import jobLoader from "./pages/jobLoader";
 
 const App: React.FC = () => {
   // Delete Job
-  const deleteJob = async (id: string) => {
-    try {
-      await fetch(`/api/jobs/${id}`, {
-        method: "DELETE",
-      });
-      // Handle response as needed
-    } catch (error) {
-      console.error("Error deleting job:", error);
-    }
-  };
 
   // Update Job
   const updateJob = async (job: Job) => {
@@ -58,11 +49,7 @@ const App: React.FC = () => {
           element={<EditJob updateJobSubmit={updateJob} />}
           loader={jobLoader}
         />
-        <Route
-          path="/jobs/:id"
-          element={<JobPage deleteJob={deleteJob} />}
-          loader={jobLoader}
-        />
+        <Route path="/jobs/:id" element={<JobPage />} loader={jobLoader} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     )
